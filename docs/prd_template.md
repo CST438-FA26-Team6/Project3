@@ -7,7 +7,7 @@
 > After the presentation, change it only through pull requests, so the history shows what changed and why.
 > Your Final Submission is graded against this document.
 
-**Team:** `<team name>` · **Repo:** `<link>` · **Last updated:** `<date>`
+**Team:** `team 6` · **Repo:** `https://github.com/CST438-FA26-Team6/Project3` · **Last updated:** `10/28/2026`
 
 ---
 
@@ -17,14 +17,14 @@ Who is this for? Name **one** primary user type and describe them in one or two 
 "Everyone" and "students" are not user types; "a first-year student looking for a study group for
 one specific course" is.
 
-- **Primary user:** `<who they are, what they are trying to do>`
-- **Secondary user (optional):** `<for example, an admin>`
+- **Primary user:** `An anime and manga fan who wants one place to track what they are currently watching or reading and what they have completed.`
+- **Secondary user (optional):** `An administrator who manages user access.`
 
 ## 2. Problem
 
 Two sentences: what the user struggles with today, and why existing options fall short.
 
-`<problem statement>`
+`With thousands of anime already available and new manga constantly being released, it can be difficult for fans to keep track of what they are currently watching or reading and what they have completed. Existing trackers often emphasize community-based scores and can feel cluttered or difficult to use, rather than focusing on a user's own experience and personal tracking.`
 
 ## 3. Success measures
 

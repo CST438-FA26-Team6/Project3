@@ -31,4 +31,4 @@ Everyone on the team adds their name and GitHub username in the PR that commits 
 | Name | GitHub |
 |---|---|
 |Jessika Torrealba|jesscococ09|
-| | |
+| Emiliano Gomez|bob234-ui |

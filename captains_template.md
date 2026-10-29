@@ -1,4 +1,4 @@
-# Merge Captains: `<team name>`
+# Merge Captains: `Team 6`
 
 [Back to the Project 03 guide](README.md#the-merge-captain-and-deputy)
 
@@ -8,10 +8,10 @@
 
 | Sprint | Captain | Deputy | Release tag |
 |---|---|---|---|
-| 1 | `<name> (@github)` | `<name> (@github)` | `v0.1.0` |
-| 2 | `<name> (@github)` | `<name> (@github)` | `v0.2.0` |
-| 3 | `<name> (@github)` | `<name> (@github)` | `v0.3.0` |
-| 4 | `<name> (@github)` | `<name> (@github)` | `v1.0.0` |
+| 1 | `Emiliano Gomez (@bob234-ui)` | `Jessika (@jesscococ09)` | `v0.1.0` |
+| 2 | `Jessika (@jesscococ09) ` | `Luis Cortes (@cortes9)` | `v0.2.0` |
+| 3 | `Luis Cortes (@cortes9)` | `Emiliano Gomez (@bob234-ui)` | `v0.3.0` |
+| 4 | `Emiliano Gomez (@bob234-ui)` | `Jessika (@jesscococ09)` | `v1.0.0` |
 
 ## Swaps
 

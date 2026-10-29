@@ -31,11 +31,12 @@ Two sentences: what the user struggles with today, and why existing options fall
 Three measurable signals that would show the product works. Each one needs a number and a way to
 check it.
 
-| # | Measure | Target | How we check it |
-|---|---|---|--|
-| S1 |  |  | |
-| S2 |  |  |  |
-| S3 |  |  |  |
+| #  | Measure                                                     | Target                                                                   | How we check it  git add docs/prd.md                                                                             |
+|----|-------------------------------------------------------------|--------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| S1 | A new user finds a title and adds it to My Library          | At least 4 out of 5 users complete the task successfully                 | Ask 5 users to find a title and confirm that it appears in My Library                         |
+| S2 | A user updates a title’s status or episode/chapter progress | At least 4 out of 5 users complete the task without help                 | Ask 5 users to update an entry and observe whether they succeed                               |
+| S3 | A user finds titles by filtering My Library                 | At least 4 out of 5 users correctly find titles with the selected status | Give 5 users a library with mixed statuses and ask them to find titles with a selected status |
+
 
 ## 4. Scope: MVP, vertical slice, and not building
 

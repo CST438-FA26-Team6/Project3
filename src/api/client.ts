@@ -1,14 +1,18 @@
-const API_URL = process.env.EXPO_PUBLIC_API_URL;
+function getApiUrl(): string {
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
 
-if (!API_URL) {
-  throw new Error("EXPO_PUBLIC_API_URL is not configured");
+  if (!apiUrl) {
+    throw new Error("EXPO_PUBLIC_API_URL is not configured");
+  }
+
+  return apiUrl;
 }
 
 export async function apiRequest<T>(
   path: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const response = await fetch(`${API_URL}${path}`, {
+  const response = await fetch(`${getApiUrl()}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",

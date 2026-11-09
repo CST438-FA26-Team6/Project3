@@ -2,6 +2,7 @@
 import { StatusBar } from 'expo-status-bar';
 import {
   ActivityIndicator,
+  Pressable,
   SafeAreaView,
   ScrollView,
   StyleSheet,
@@ -14,9 +15,10 @@ import type { LibraryEntry } from '../types/library';
 
 // Information passed into the Home Screen.
 interface Props {
-  entries: LibraryEntry[];
+  entries?: LibraryEntry[];
   loading?: boolean;
   error?: string | null;
+  onSearch?: () => void;
 
   // TEMPORARY: Remove the preview flag after connecting the real API.
   isPreview?: boolean;
@@ -24,9 +26,10 @@ interface Props {
 
 // Displays the user's personal anime and manga library.
 export default function HomeScreen({
-  entries,
+  entries = [],
   loading = false,
   error = null,
+  onSearch,
   isPreview = false,
 }: Props) {
   return (
@@ -50,6 +53,19 @@ export default function HomeScreen({
         <Text style={styles.description}>
           Track your anime and manga collection.
         </Text>
+
+        {onSearch && (
+          <Pressable
+            accessibilityRole="button"
+            onPress={onSearch}
+            style={({ pressed }) => [
+              styles.searchButton,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Text style={styles.searchButtonText}>Search Titles</Text>
+          </Pressable>
+        )}
 
         {/* TEMPORARY: Preview notice for sample data only. */}
         {isPreview && (
@@ -145,6 +161,23 @@ const styles = StyleSheet.create({
     color: '#666477',
     fontSize: 15,
     marginTop: 8,
+  },
+  searchButton: {
+    alignItems: 'center',
+    alignSelf: 'stretch',
+    backgroundColor: '#51427e',
+    borderRadius: 12,
+    marginTop: 20,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+  },
+  pressedButton: {
+    opacity: 0.85,
+  },
+  searchButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
   previewNotice: {
     color: '#775c28',

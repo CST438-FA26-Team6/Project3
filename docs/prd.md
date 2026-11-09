@@ -31,10 +31,10 @@ Two sentences: what the user struggles with today, and why existing options fall
 Three measurable signals that would show the product works. Each one needs a number and a way to
 check it.
 
-| #  | Measure                                                     | Target                                                                   | How we check it  git add docs/prd.md                                                                             |
-|----|-------------------------------------------------------------|--------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| S1 | A new user finds a title and adds it to My Library          | At least 4 out of 5 users complete the task successfully                 | Ask 5 users to find a title and confirm that it appears in My Library                         |
-| S2 | A user updates a title’s status or episode/chapter progress | At least 4 out of 5 users complete the task without help                 | Ask 5 users to update an entry and observe whether they succeed                               |
+| #  | Measure                                                     | Target                                                                   | How we check it                                                           |
+|----|-------------------------------------------------------------|--------------------------------------------------------------------------|---------------------------------------------------------------------------|
+| S1 | A new user finds a title and adds it to My Library          | At least 4 out of 5 users complete the task successfully                 | Ask 5 users to find a title and confirm that it appears in My Library     |
+| S2 | A user updates a title’s status or episode/chapter progress | At least 4 out of 5 users complete the task without help                 | Ask 5 users to update an entry and observe whether they succeed           |
 | S3 | A user finds titles by filtering My Library                 | At least 4 out of 5 users correctly find titles with the selected status | Give 5 users a library with mixed statuses and ask them to find titles with a selected status |
 
 
@@ -44,7 +44,7 @@ check it.
 account baseline (sign in with GitHub and Google, update profile, delete account) **plus** the
 stories specific to your product.
 
-- **MVP stories:** PRD-1, PRD-2, PRD-3, PRD-4, PRD-5, PRD-6, and PRD-7
+- **MVP stories:** PRD-1, PRD-2, PRD-3, PRD-4, PRD-5, PRD-6, PRD-7 and PRD-8
   (listed in section 5).
 - **Vertical slice:** PRD-4 — a signed-in user opens an anime or manga title, adds it to their
   personal library with a tracking status, and sees the new entry in My Library. This story will
@@ -67,6 +67,7 @@ test.
 | PRD-5 | As a user, I want to update a library entry so that my status, episode or chapter progress, and rating remain accurate. | **Given** a title is in my library, **when** I submit valid progress, status, or rating changes, **then** the changes are saved and displayed. Progress greater than the title's total episodes or chapters is rejected with an explanation. |
 | PRD-6 | As a user, I want to filter my library so that I can quickly find titles with a particular status. | **Given** my library contains titles with different statuses, **when** I select a status filter, **then** only entries with that status are displayed. |
 | PRD-7 | As an administrator, I want to manage title records so that incorrect catalog information can be corrected or removed. | **Given** I have the administrator role, **when** I update or remove a title, **then** the catalog reflects the change. **Given** I am not an administrator, **when** I attempt the same operation, **then** the request is rejected with a 403 response. |
+| PRD-8 | As an administrator, I want to manage user roles so that I can grant or revoke administrator access. | **Given** I have the administrator role, **when** I view users, **then** the users available for role management are displayed. **Given** I have the administrator role, **when** I grant or revoke another user's administrator role, **then** the role change is saved and enforced on subsequent protected requests. **Given** I am not an administrator, **when** I attempt to manage user roles, **then** the request is rejected with a 403 response. |
 
 ---
 
@@ -75,3 +76,4 @@ test.
 | Date | PR | What changed and why |
 |---|---|---|
 | `10/28/2026` | `#1-5` | Initial version |
+| `11/08/2026` | `#63` | Added PRD-8 for required admin role management. |

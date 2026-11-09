@@ -21,7 +21,11 @@ const filters: Array<{ label: string; value: TitleTypeFilter }> = [
   { label: 'Manga', value: 'MANGA' },
 ];
 
-export default function SearchScreen() {
+interface Props {
+  onBack?: () => void;
+}
+
+export default function SearchScreen({ onBack }: Props) {
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<TitleTypeFilter>('ALL');
   const [results, setResults] = useState<TitleSearchResult[]>([]);
@@ -66,6 +70,19 @@ export default function SearchScreen() {
         contentContainerStyle={styles.content}
         keyboardShouldPersistTaps="handled"
       >
+        {onBack && (
+          <Pressable
+            accessibilityRole="button"
+            onPress={onBack}
+            style={({ pressed }) => [
+              styles.backButton,
+              pressed && styles.pressedButton,
+            ]}
+          >
+            <Text style={styles.backButtonText}>Back to My Library</Text>
+          </Pressable>
+        )}
+
         <Text style={styles.heading}>Search Titles</Text>
         <Text style={styles.description}>
           Search the catalog and filter results by media type.
@@ -188,6 +205,19 @@ const styles = StyleSheet.create({
   content: {
     flexGrow: 1,
     padding: 24,
+  },
+  backButton: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#e9e5f7',
+    borderRadius: 10,
+    marginBottom: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+  },
+  backButtonText: {
+    color: '#51427e',
+    fontSize: 15,
+    fontWeight: 'bold',
   },
   heading: {
     color: '#242038',

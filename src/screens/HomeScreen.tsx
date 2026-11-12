@@ -1,4 +1,5 @@
 
+import { useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import {
   ActivityIndicator,
@@ -11,7 +12,7 @@ import {
 } from 'react-native';
 
 import LibraryEntryCard from '../components/LibraryEntryCard';
-import type { LibraryEntry } from '../types/library';
+import type { LibraryEntry, LibraryStatus } from '../types/library';
 
 // Information passed into the Home Screen.
 interface Props {
@@ -20,9 +21,27 @@ interface Props {
   error?: string | null;
   onSearch?: () => void;
 
-  // TEMPORARY: Remove the preview flag after connecting the real API.
+  // TEMPORARY: Remove this after connecting the real API.
   isPreview?: boolean;
 }
+
+// Each option has a visible label and a library status.
+// "ALL" is only used by the filter, not by the backend.
+type StatusFilter = 'ALL' | LibraryStatus;
+
+const statusFilters: {
+  label: string;
+  value: StatusFilter;
+}[] = [
+  { label: 'All', value: 'ALL' },
+  { label: 'Watching', value: 'WATCHING' },
+  { label: 'Reading', value: 'READING' },
+  { label: 'Completed', value: 'COMPLETED' },
+  { label: 'On Hold', value: 'ON_HOLD' },
+  { label: 'Dropped', value: 'DROPPED' },
+  { label: 'Plan to Watch', value: 'PLAN_TO_WATCH' },
+  { label: 'Plan to Read', value: 'PLAN_TO_READ' },
+];
 
 // Displays the user's personal anime and manga library.
 export default function HomeScreen({
@@ -32,6 +51,24 @@ export default function HomeScreen({
   onSearch,
   isPreview = false,
 }: Props) {
+  // Keep track of which status the user selected.
+  const [selectedStatus, setSelectedStatus] =
+    useState<StatusFilter>('ALL');
+
+  // Show all entries or only entries matching the selected status.
+  const filteredEntries =
+    selectedStatus === 'ALL'
+      ? entries
+      : entries.filter(
+          (entry) => entry.status === selectedStatus
+        );
+
+  // Get the label to display when a filter has no results.
+  const selectedLabel =
+    statusFilters.find(
+      (filter) => filter.value === selectedStatus
+    )?.label ?? 'Selected';
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
@@ -41,6 +78,7 @@ export default function HomeScreen({
         <Text style={styles.appName}>
           Anime & Manga Tracker
         </Text>
+
         <Text style={styles.subtitle}>
           Keep track of what you watch and read.
         </Text>
@@ -54,6 +92,7 @@ export default function HomeScreen({
           Track your anime and manga collection.
         </Text>
 
+        {/* Keep the existing Search Screen navigation. */}
         {onSearch && (
           <Pressable
             accessibilityRole="button"
@@ -63,7 +102,9 @@ export default function HomeScreen({
               pressed && styles.pressedButton,
             ]}
           >
-            <Text style={styles.searchButtonText}>Search Titles</Text>
+            <Text style={styles.searchButtonText}>
+              Search Titles
+            </Text>
           </Pressable>
         )}
 
@@ -74,7 +115,61 @@ export default function HomeScreen({
           </Text>
         )}
 
-        {/* Show loading, error, empty, or populated library. */}
+        {/* Allow users to filter library entries by status. */}
+        {!loading && !error && (
+          <View style={styles.filterSection}>
+            <Text style={styles.filterHeading}>
+              Filter by Status
+            </Text>
+
+            <Text style={styles.filterDescription}>
+              Select a status to filter your library.
+            </Text>
+
+            {/* Horizontal scrolling supports smaller phone screens. */}
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.filterList}
+            >
+              {statusFilters.map((filter) => {
+                const isSelected =
+                  selectedStatus === filter.value;
+
+                return (
+                  <Pressable
+                    key={filter.value}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Filter: ${filter.label}`}
+                    accessibilityState={{
+                      selected: isSelected,
+                    }}
+                    onPress={() =>
+                      setSelectedStatus(filter.value)
+                    }
+                    style={({ pressed }) => [
+                      styles.filterButton,
+                      isSelected && styles.selectedFilterButton,
+                      pressed && styles.pressedButton,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.filterButtonText,
+                        isSelected &&
+                          styles.selectedFilterButtonText,
+                      ]}
+                    >
+                      {filter.label}
+                    </Text>
+                  </Pressable>
+                );
+              })}
+            </ScrollView>
+          </View>
+        )}
+
+        {/* Show loading, error, empty, or filtered library. */}
         {loading ? (
           <ActivityIndicator
             size="large"
@@ -86,31 +181,59 @@ export default function HomeScreen({
             <Text style={styles.messageTitle}>
               Unable to load your library
             </Text>
+
             <Text style={styles.messageDescription}>
               {error}
             </Text>
           </View>
         ) : entries.length === 0 ? (
           <View style={styles.messageBox}>
-            <Text style={styles.emptyIcon}>📚</Text>
             <Text style={styles.messageTitle}>
               Your library is empty
             </Text>
+
             <Text style={styles.messageDescription}>
               Add anime or manga to your library to start
               tracking your progress, status, and ratings.
             </Text>
           </View>
-        ) : (
-          <View style={styles.libraryList}>
-            {/* Display how many titles are in the library. */}
-            <Text style={styles.entryCount}>
-              {entries.length}{' '}
-              {entries.length === 1 ? 'title' : 'titles'}
+        ) : filteredEntries.length === 0 ? (
+          // Show this message if the chosen filter has no matches.
+          <View style={styles.messageBox}>
+            <Text style={styles.messageTitle}>
+              No matching titles
             </Text>
 
-            {/* Create a card for each library entry. */}
-            {entries.map((entry) => (
+            <Text style={styles.messageDescription}>
+              Your library has no titles with the status
+              "{selectedLabel}".
+            </Text>
+
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => setSelectedStatus('ALL')}
+              style={({ pressed }) => [
+                styles.showAllButton,
+                pressed && styles.pressedButton,
+              ]}
+            >
+              <Text style={styles.showAllButtonText}>
+                Show All Titles
+              </Text>
+            </Pressable>
+          </View>
+        ) : (
+          <View style={styles.libraryList}>
+            {/* Show how many entries match the selected status. */}
+            <Text style={styles.entryCount}>
+              {filteredEntries.length}{' '}
+              {filteredEntries.length === 1
+                ? 'title'
+                : 'titles'}
+            </Text>
+
+            {/* Display only the matching library cards. */}
+            {filteredEntries.map((entry) => (
               <LibraryEntryCard
                 key={entry.id}
                 entry={entry}
@@ -187,6 +310,62 @@ const styles = StyleSheet.create({
     marginTop: 18,
     fontSize: 13,
   },
+
+  // Library status filtering styles.
+  filterSection: {
+    marginTop: 24,
+  },
+  filterHeading: {
+    color: '#242038',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  filterDescription: {
+    color: '#666477',
+    fontSize: 14,
+    marginTop: 6,
+    marginBottom: 14,
+  },
+  filterList: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingBottom: 4,
+    gap: 8,
+  },
+  filterButton: {
+    paddingHorizontal: 16,
+    paddingVertical: 11,
+    borderRadius: 20,
+    backgroundColor: '#ffffff',
+    borderColor: '#d8d3e6',
+    borderWidth: 1,
+  },
+  selectedFilterButton: {
+    backgroundColor: '#51427e',
+    borderColor: '#51427e',
+  },
+  filterButtonText: {
+    color: '#51427e',
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  selectedFilterButtonText: {
+    color: '#ffffff',
+  },
+  showAllButton: {
+    marginTop: 20,
+    backgroundColor: '#51427e',
+    paddingHorizontal: 18,
+    paddingVertical: 12,
+    borderRadius: 10,
+  },
+  showAllButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+
+  // Existing library display styles.
   libraryList: {
     marginTop: 22,
   },
@@ -206,10 +385,6 @@ const styles = StyleSheet.create({
     marginTop: 28,
     borderWidth: 1,
     borderColor: '#e7e5ef',
-  },
-  emptyIcon: {
-    fontSize: 48,
-    marginBottom: 16,
   },
   messageTitle: {
     color: '#242038',

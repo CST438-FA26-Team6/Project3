@@ -1,9 +1,13 @@
+import { useEffect, useState } from 'react';
+import { ActivityIndicator, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
+import { getToken } from '../auth/tokenStore';
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
+import LoginScreen from '../screens/LoginScreen';
 import type { LibraryEntry } from '../types/library';
 import type { RootStackParamList } from './types';
 
@@ -66,9 +70,45 @@ function SearchTitlesRoute({
 }
 
 export default function RootNavigator() {
+  const [initialRoute, setInitialRoute] = useState<
+    'Login' | 'Home' | null
+  >(null);
+
+  useEffect(() => {
+    async function restoreSession() {
+      const token = await getToken();
+
+      setInitialRoute(token ? 'Home' : 'Login');
+    }
+
+    restoreSession();
+  }, []);
+
+  if (!initialRoute) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          alignItems: 'center',
+          justifyContent: 'center',
+          backgroundColor: '#000000',
+        }}
+      >
+        <ActivityIndicator color="#ffffff" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator
+        initialRouteName={initialRoute}
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen
+          name="Login"
+          component={LoginScreen}
+        />
         <Stack.Screen
           name="Home"
           component={HomeRoute}

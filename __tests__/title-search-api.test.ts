@@ -1,3 +1,7 @@
+jest.mock('../src/auth/tokenStore', () => ({
+  getToken: jest.fn().mockResolvedValue(null),
+}));
+
 describe('title search API', () => {
   beforeEach(() => {
     jest.resetModules();
@@ -37,6 +41,7 @@ describe('title search API', () => {
     const titles = [
       { id: 1, title: 'Cowboy Bebop', mediaType: 'ANIME' },
     ];
+
     const mockResponse = {
       ok: true,
       status: 200,
@@ -47,16 +52,21 @@ describe('title search API', () => {
 
     const { searchTitles } = require('../src/api/titles');
 
-    await expect(searchTitles('Cowboy Bebop', 'ANIME')).resolves.toEqual(
-      titles
-    );
+    await expect(
+      searchTitles('Cowboy Bebop', 'ANIME')
+    ).resolves.toEqual(titles);
+
     expect(globalThis.fetch).toHaveBeenCalledWith(
       'http://localhost:8080/api/titles?query=Cowboy%20Bebop&type=ANIME',
       expect.objectContaining({
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: expect.any(Headers),
       })
+    );
+
+    const [, options] = (globalThis.fetch as jest.Mock).mock.calls[0];
+
+    expect(options.headers.get('Content-Type')).toBe(
+      'application/json'
     );
   });
 });

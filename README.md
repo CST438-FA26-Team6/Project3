@@ -17,6 +17,21 @@ For detailed verification and troubleshooting steps, see
 - Java 21 for the backend test suite
 - Optional for Android: Android Studio and an Android emulator
 
+### Select Node.js 22 with nvm
+
+The frontend requires Node.js 22. If `node --version` reports another version,
+install [nvm](https://github.com/nvm-sh/nvm), then run:
+
+```bash
+nvm install 22
+nvm use 22
+node --version
+npm --version
+```
+
+The Node output should begin with `v22`. Run `nvm use 22` in each new terminal
+before installing dependencies or starting Expo.
+
 ## Clone both repositories
 
 The frontend and backend must be cloned into the same parent folder:
@@ -49,7 +64,7 @@ The backend must be ready first because the frontend sends its API requests to
 `http://localhost:8080`.
 
 ## Terminal 1: Start the backend
-
+Make sure docker is running.
 ```bash
 cd /path/to/Project3-workspace/Project3-backend
 cp .env.example .env
@@ -74,6 +89,7 @@ The backend README explains how to load the included sample anime and manga.
 
 ```bash
 cd /path/to/Project3-workspace/Project3
+nvm use 22
 npm ci
 cp .env.example .env
 npx expo start --web

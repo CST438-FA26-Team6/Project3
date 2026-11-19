@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
@@ -5,14 +6,17 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { getToken } from '../auth/tokenStore';
+import { updateLibraryEntry } from '../api/library';
 import HomeScreen from '../screens/HomeScreen';
 import SearchScreen from '../screens/SearchScreen';
 import LoginScreen from '../screens/LoginScreen';
+import EditLibraryScreen from '../screens/EditLibraryScreen';
 import type { LibraryEntry } from '../types/library';
 import type { RootStackParamList } from './types';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+// TEMPORARY: Sample entries until the real library API is available.
 const sampleLibrary: LibraryEntry[] = [
   {
     id: 1,
@@ -43,18 +47,6 @@ const sampleLibrary: LibraryEntry[] = [
   },
 ];
 
-function HomeRoute({
-  navigation,
-}: NativeStackScreenProps<RootStackParamList, 'Home'>) {
-  return (
-    <HomeScreen
-      entries={sampleLibrary}
-      isPreview
-      onSearch={() => navigation.navigate('SearchTitles')}
-    />
-  );
-}
-
 function SearchTitlesRoute({
   navigation,
 }: NativeStackScreenProps<RootStackParamList, 'SearchTitles'>) {
@@ -74,6 +66,10 @@ export default function RootNavigator() {
     'Login' | 'Home' | null
   >(null);
 
+  // TEMPORARY: Display sample data until library loading is added.
+  const [entries, setEntries] =
+    useState<LibraryEntry[]>(sampleLibrary);
+
   useEffect(() => {
     async function restoreSession() {
       const token = await getToken();
@@ -83,6 +79,27 @@ export default function RootNavigator() {
 
     restoreSession();
   }, []);
+
+  // Save changes through the shared frontend API client.
+  async function saveLibraryEntry(
+    updatedEntry: LibraryEntry
+  ): Promise<void> {
+    const savedEntry = await updateLibraryEntry(
+      updatedEntry.id,
+      {
+        status: updatedEntry.status,
+        progress: updatedEntry.progress,
+        rating: updatedEntry.rating,
+      }
+    );
+
+    // Only update the screen after the backend confirms the save.
+    setEntries((currentEntries) =>
+      currentEntries.map((entry) =>
+        entry.id === savedEntry.id ? savedEntry : entry
+      )
+    );
+  }
 
   if (!initialRoute) {
     return (
@@ -105,18 +122,58 @@ export default function RootNavigator() {
         initialRouteName={initialRoute}
         screenOptions={{ headerShown: false }}
       >
+        {/* Keep the existing login screen. */}
         <Stack.Screen
           name="Login"
           component={LoginScreen}
         />
-        <Stack.Screen
-          name="Home"
-          component={HomeRoute}
-        />
+
+        {/* Display the library and allow users to edit entries. */}
+        <Stack.Screen name="Home">
+          {({ navigation }) => (
+            <HomeScreen
+              entries={entries}
+              isPreview
+              onSearch={() =>
+                navigation.navigate('SearchTitles')
+              }
+              onEdit={(entryId) =>
+                navigation.navigate('EditLibrary', {
+                  entryId,
+                })
+              }
+            />
+          )}
+        </Stack.Screen>
+
+        {/* Keep the existing search screen. */}
         <Stack.Screen
           name="SearchTitles"
           component={SearchTitlesRoute}
         />
+
+        {/* Open the selected library entry for editing. */}
+        <Stack.Screen name="EditLibrary">
+          {({ route, navigation }) => {
+            const selectedEntry = entries.find(
+              (entry) => entry.id === route.params.entryId
+            );
+
+            return (
+              <EditLibraryScreen
+                entry={selectedEntry}
+                onBack={() => navigation.goBack()}
+                onSave={async (updatedEntry) => {
+                  // Stay on this screen if the API request fails.
+                  await saveLibraryEntry(updatedEntry);
+
+                  // Return to the library after a successful save.
+                  navigation.goBack();
+                }}
+              />
+            );
+          }}
+        </Stack.Screen>
       </Stack.Navigator>
     </NavigationContainer>
   );

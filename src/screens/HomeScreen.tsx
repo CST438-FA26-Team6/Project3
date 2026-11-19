@@ -20,13 +20,13 @@ interface Props {
   loading?: boolean;
   error?: string | null;
   onSearch?: () => void;
+  onEdit?: (entryId: number) => void;
 
-  // TEMPORARY: Remove this after connecting the real API.
+  // TEMPORARY: Remove this after connecting real library data.
   isPreview?: boolean;
 }
 
-// Each option has a visible label and a library status.
-// "ALL" is only used by the filter, not by the backend.
+// "ALL" is only used for filtering, not stored as a library status.
 type StatusFilter = 'ALL' | LibraryStatus;
 
 const statusFilters: {
@@ -49,13 +49,13 @@ export default function HomeScreen({
   loading = false,
   error = null,
   onSearch,
+  onEdit,
   isPreview = false,
 }: Props) {
-  // Keep track of which status the user selected.
   const [selectedStatus, setSelectedStatus] =
     useState<StatusFilter>('ALL');
 
-  // Show all entries or only entries matching the selected status.
+  // Filter based on entry.status, not the title's text.
   const filteredEntries =
     selectedStatus === 'ALL'
       ? entries
@@ -63,7 +63,6 @@ export default function HomeScreen({
           (entry) => entry.status === selectedStatus
         );
 
-  // Get the label to display when a filter has no results.
   const selectedLabel =
     statusFilters.find(
       (filter) => filter.value === selectedStatus
@@ -73,7 +72,6 @@ export default function HomeScreen({
     <SafeAreaView style={styles.container}>
       <StatusBar style="light" />
 
-      {/* App title and description. */}
       <View style={styles.header}>
         <Text style={styles.appName}>
           Anime & Manga Tracker
@@ -84,7 +82,6 @@ export default function HomeScreen({
         </Text>
       </View>
 
-      {/* Scrollable library content. */}
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.heading}>My Library</Text>
 
@@ -92,7 +89,7 @@ export default function HomeScreen({
           Track your anime and manga collection.
         </Text>
 
-        {/* Keep the existing Search Screen navigation. */}
+        {/* Preserve existing navigation to the Search Screen. */}
         {onSearch && (
           <Pressable
             accessibilityRole="button"
@@ -108,14 +105,14 @@ export default function HomeScreen({
           </Pressable>
         )}
 
-        {/* TEMPORARY: Preview notice for sample data only. */}
+        {/* TEMPORARY: Sample library preview notice. */}
         {isPreview && (
           <Text style={styles.previewNotice}>
             Preview: displaying sample library entries.
           </Text>
         )}
 
-        {/* Allow users to filter library entries by status. */}
+        {/* Existing library status filters. */}
         {!loading && !error && (
           <View style={styles.filterSection}>
             <Text style={styles.filterHeading}>
@@ -126,7 +123,6 @@ export default function HomeScreen({
               Select a status to filter your library.
             </Text>
 
-            {/* Horizontal scrolling supports smaller phone screens. */}
             <ScrollView
               horizontal
               showsHorizontalScrollIndicator={false}
@@ -198,7 +194,6 @@ export default function HomeScreen({
             </Text>
           </View>
         ) : filteredEntries.length === 0 ? (
-          // Show this message if the chosen filter has no matches.
           <View style={styles.messageBox}>
             <Text style={styles.messageTitle}>
               No matching titles
@@ -224,7 +219,6 @@ export default function HomeScreen({
           </View>
         ) : (
           <View style={styles.libraryList}>
-            {/* Show how many entries match the selected status. */}
             <Text style={styles.entryCount}>
               {filteredEntries.length}{' '}
               {filteredEntries.length === 1
@@ -232,11 +226,12 @@ export default function HomeScreen({
                 : 'titles'}
             </Text>
 
-            {/* Display only the matching library cards. */}
+            {/* Edit opens the screen for the selected entry. */}
             {filteredEntries.map((entry) => (
               <LibraryEntryCard
                 key={entry.id}
                 entry={entry}
+                onEdit={onEdit}
               />
             ))}
           </View>
@@ -246,7 +241,6 @@ export default function HomeScreen({
   );
 }
 
-// Styles for the Home Screen.
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -310,8 +304,6 @@ const styles = StyleSheet.create({
     marginTop: 18,
     fontSize: 13,
   },
-
-  // Library status filtering styles.
   filterSection: {
     marginTop: 24,
   },
@@ -364,8 +356,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
   },
-
-  // Existing library display styles.
   libraryList: {
     marginTop: 22,
   },

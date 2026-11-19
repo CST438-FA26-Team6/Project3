@@ -1,13 +1,18 @@
 
-import { StyleSheet, Text, View } from 'react-native';
-import type { LibraryEntry, LibraryStatus } from '../types/library';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
-// Information passed into the library entry card.
+import type {
+  LibraryEntry,
+  LibraryStatus,
+} from '../types/library';
+
 interface Props {
   entry: LibraryEntry;
+
+  // Optional callback to open the Edit Library Screen.
+  onEdit?: (entryId: number) => void;
 }
 
-// TEMPORARY: Confirm these labels with the backend status values.
 const statusLabels: Record<LibraryStatus, string> = {
   WATCHING: 'Watching',
   READING: 'Reading',
@@ -19,12 +24,13 @@ const statusLabels: Record<LibraryStatus, string> = {
 };
 
 // Displays a single anime or manga entry in the library.
-export default function LibraryEntryCard({ entry }: Props) {
-  // Use episodes for anime and chapters for manga.
+export default function LibraryEntryCard({
+  entry,
+  onEdit,
+}: Props) {
   const progressUnit =
     entry.mediaType === 'ANIME' ? 'episodes' : 'chapters';
 
-  // Show the total when it is available.
   const progressText =
     entry.total === null
       ? `${entry.progress} ${progressUnit}`
@@ -33,10 +39,10 @@ export default function LibraryEntryCard({ entry }: Props) {
   return (
     <View style={styles.card}>
       <View style={styles.topRow}>
-        {/* Title of the anime or manga. */}
-        <Text style={styles.title}>{entry.title}</Text>
+        <Text style={styles.title}>
+          {entry.title}
+        </Text>
 
-        {/* Current tracking status. */}
         <View style={styles.statusBadge}>
           <Text style={styles.statusText}>
             {statusLabels[entry.status]}
@@ -44,25 +50,41 @@ export default function LibraryEntryCard({ entry }: Props) {
         </View>
       </View>
 
-      {/* Type of media. */}
       <Text style={styles.mediaType}>
         {entry.mediaType === 'ANIME' ? 'Anime' : 'Manga'}
       </Text>
 
-      {/* Episodes watched or chapters read. */}
       <Text style={styles.detail}>
         Progress: {progressText}
       </Text>
 
-      {/* TEMPORARY: Confirm the rating scale with the backend. */}
+      {/* TEMPORARY: Rating scale assumed to be 0-10. */}
       <Text style={styles.detail}>
-        Rating: {entry.rating === null ? 'Not rated' : `${entry.rating} / 10`}
+        Rating: {entry.rating === null
+          ? 'Not rated'
+          : `${entry.rating} / 10`}
       </Text>
+
+      {/* Display the Edit button when navigation is available. */}
+      {onEdit && (
+        <Pressable
+          accessibilityRole="button"
+          accessibilityLabel={`Edit ${entry.title}`}
+          onPress={() => onEdit(entry.id)}
+          style={({ pressed }) => [
+            styles.editButton,
+            pressed && styles.pressedButton,
+          ]}
+        >
+          <Text style={styles.editButtonText}>
+            Edit Entry
+          </Text>
+        </Pressable>
+      )}
     </View>
   );
 }
 
-// Styles for the library card.
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#ffffff',
@@ -106,5 +128,20 @@ const styles = StyleSheet.create({
     color: '#666477',
     fontSize: 14,
     marginTop: 5,
+  },
+  editButton: {
+    backgroundColor: '#51427e',
+    borderRadius: 10,
+    alignItems: 'center',
+    paddingVertical: 12,
+    marginTop: 18,
+  },
+  editButtonText: {
+    color: '#ffffff',
+    fontSize: 14,
+    fontWeight: 'bold',
+  },
+  pressedButton: {
+    opacity: 0.85,
   },
 });

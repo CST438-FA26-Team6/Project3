@@ -6,13 +6,13 @@
 > Every member is captain at least once. The deputy cannot be the same person as the captain.
 > Change it only through a pull request, so the history shows any swap and why.
 
-| Sprint | Captain | Deputy | Release tag |
-|---|---|---|---|
-| 1 | `Emiliano Gomez (@bob234-ui)` | `Jessika (@jesscococ09)` | `v0.1.0` |
-| 2 | `Jessika (@jesscococ09) ` | `Luis Cortes (@cortes9)` | `v0.2.0` |
-| 3 | `Luis Cortes (@cortes9)` | `Emiliano Gomez (@bob234-ui)` | `v0.3.0` |
-| 4 | `Emiliano Gomez (@bob234-ui)` | `Jessika (@jesscococ09)` | `v1.0.0` |
-
+| Sprint      | Captain | Deputy | Release tag |
+|-------------|---|---|-------------|
+| 1           | `Emiliano Gomez (@bob234-ui)` | `Jessika (@jesscococ09)` | `v0.1.0`    |
+| 2           | `Jessika (@jesscococ09) ` | `Luis Cortes (@cortes9)` | `v0.2.0`    |
+| 3           | `Luis Cortes (@cortes9)` | `Emiliano Gomez (@bob234-ui)` | `v0.3.0`    |
+| fall break  | `Emiliano Gomez (@bob234-ui)` | `Jessika (@jesscococ09)` | `v0.4.0`    |
+| 4           | `Jessika (@jesscococ09) `| `Luis Cortes (@cortes9)`| `v1.0.0`    |
 ## Swaps
 
 If a captain cannot serve their sprint, record the swap here before the sprint starts.
